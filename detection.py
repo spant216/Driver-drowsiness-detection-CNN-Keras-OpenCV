@@ -5,21 +5,28 @@ import numpy as np
 from pygame import mixer
 import time
 
-
 mixer.init()
 sound = mixer.Sound('alarm.wav')
 
-face = cv2.CascadeClassifier('haarcascade/haarcascade_frontalface_alt.xml')
-leye = cv2.CascadeClassifier('haarcascade/haarcascade_lefteye_2splits.xml')
-reye = cv2.CascadeClassifier('haarcascade/haarcascade_righteye_2splits.xml')
+# Load Haar cascades
+face = cv2.CascadeClassifier('E:/project/Driver-drowsiness-detection-CNN-Keras-OpenCV/haarcascade/haarcascade_frontalface_alt.xml')
+leye = cv2.CascadeClassifier('E:/project/Driver-drowsiness-detection-CNN-Keras-OpenCV/haarcascade/haarcascade_lefteye_2splits.xml')
+reye = cv2.CascadeClassifier('E:/project/Driver-drowsiness-detection-CNN-Keras-OpenCV/haarcascade/haarcascade_righteye_2splits.xml')
+eyes = cv2.CascadeClassifier('E:/project/Driver-drowsiness-detection-CNN-Keras-OpenCV/haarcascade/haarcascade_eye.xml')
 
-eyes=cv2.CascadeClassifier('haarcascade\haarcascade_eye.xml')
 
 lbl=['Closed eyes','Open eyes']
 
 model = load_model('CNN__model.h5')
+
+# Compile the model if you plan to continue training
+model.compile(optimizer='adam',  # Adjust as necessary
+              loss='binary_crossentropy',  # Adjust as necessary
+              metrics=['accuracy'])  # Adjust as necessary
+
 path = os.getcwd()
 cap = cv2.VideoCapture(0) #to access the camera 
+
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 count=0
 score=0
@@ -54,7 +61,13 @@ while(True):
         r_eye= r_eye/255                  
         r_eye=  r_eye.reshape(100,100,-1)
         r_eye = np.expand_dims(r_eye,axis=0)
-        rpred = model.predict_classes(r_eye)
+        rpred = model.predict(r_eye)
+        rpred_class = np.argmax(rpred, axis=1)  # Get the index of the highest probability
+
+        if rpred_class[0] == 1:
+            lbl = 'Open'
+        if rpred_class[0] == 0:
+            lbl = 'Closed'
 
         if(rpred[0]==1):
             lbl='Open' 
@@ -70,7 +83,14 @@ while(True):
         l_eye= l_eye/255
         l_eye=l_eye.reshape(100,100,-1)
         l_eye = np.expand_dims(l_eye,axis=0)
-        lpred = model.predict_classes(l_eye)
+#         lpred = model.predict_classes(l_eye)
+        lpred = model.predict(l_eye)
+        lpred_class = np.argmax(lpred, axis=1)  # Get the index of the highest probability
+
+        if lpred_class[0] == 1:
+            lbl = 'Open'
+        if lpred_class[0] == 0:
+            lbl = 'Closed'
         if(lpred[0]==1):
             lbl='Open'   
         if(lpred[0]==0):
