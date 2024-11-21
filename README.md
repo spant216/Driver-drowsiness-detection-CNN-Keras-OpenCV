@@ -8,3 +8,5 @@ Train_model.py is the script used to traing the CNN classifier model.
 
 # Vedio Link
 https://drive.google.com/file/d/15_1B-n15fWxpHFIXsDOWWjkjlbLdQzTF/view?usp=sharing
+
+## clone date 21-11-2024
